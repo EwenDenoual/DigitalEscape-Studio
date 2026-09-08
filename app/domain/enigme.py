@@ -112,6 +112,7 @@ Door1 = Door ( "Quel est le pokemon que tu a obtenus?",
                 "NOCTALI",
                 "Il aime les tenebre",
                 "Rappel toi de la question 1" )
+
 Door2 = Door ( "Quel est le pokemon que tu a obtenus?",
                 "EXAGIDE",
                 "Il est eppee et bouclier",
