@@ -1,6 +1,5 @@
-from classes import Enigme
-
-from classes import Door
+from .classes import Enigme
+from .classes import Door
 
 
 Enigme1 = Enigme ( "Quel pokemon est celui qui possede le plus de formes evolutives ?",
