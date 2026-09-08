@@ -1,6 +1,7 @@
 class Game:
     def __init__(self, enigmes):
         self.enigmes = enigmes
+        self.door = Door()
         self.current_enigme_index = 0
 
     def start(self):
@@ -14,12 +15,14 @@ class Game:
                 print("Mauvaise réponse. Essayez encore.")
                 current_enigme.donner_indice()
         print("Félicitations ! Vous avez résolu toutes les énigmes.")
+        self.door.unlock()
 
 class Enigme:
-    def __init__(self, question, reponse, indice):
+    def __init__(self, question, reponse, indice, lettre = None):
         self.question = question
         self.reponse = reponse
         self.indice = indice
+        self.lettre = lettre
         self.solved = False
 
     def poser_question(self):
@@ -35,5 +38,23 @@ class Enigme:
             return False
     
     def donner_indice(self):
-        
         print("Indice: " + self.indice)
+
+    def get_lettre(self):
+        return self.lettre
+
+class Door(Enigme):
+    def __init__(self, question, reponse, indice, indice2):
+        super().__init__(question, reponse, indice)
+        self.indice2 = indice2
+        self.locked = True
+
+    def donner_indice2(self):
+            print("Indice: " + self.indice2)
+
+    def unlock(self):
+        if self.solved:
+            self.locked = False
+            print("La porte est maintenant déverrouillée.")
+        else:
+            print("Vous devez résoudre l'énigme pour déverrouiller la porte 2.")
