@@ -77,6 +77,8 @@ while i <= 26:
 
         if hash_sha256(tentative.upper()) == enigme.reponse:
             return {"correct": True, "message": "Félicitations ! Vous avez trouvé la bonne réponse. Vous obtenez la lettre : " + enigme.lettre}
+        if hash_sha256(tentative.upper()) == None:
+            return {"correct": False, "message": "Veuillez entrer une réponse."}
         return {"correct": False, "message": "Désolé, ce n'est pas la bonne réponse."}
     i = i + 1
 
@@ -96,6 +98,8 @@ while y <= 3:
         if hash_sha256(tentative.upper()) == door.reponse:
             door.solved = True
             return {"correct": True, "message": "Félicitations ! Vous avez trouvé la bonne réponse pour la porte " + str(i) + ". Vous pouvez maintenant déverrouiller la porte."}
+        if hash_sha256(tentative.upper()) == None:
+            return {"correct": False, "message": "Veuillez entrer une réponse."}
         return {"correct": False, "message": "Désolé, ce n'est pas la bonne réponse pour la porte " + str(i) + "."}
 
     @app.get("/Door{i}/indice")
@@ -111,6 +115,7 @@ while y <= 3:
         if door is None:
             return {"erreur": "Door introuvable"}
         return {"indice2": door.indice2}
+    
     @app.get("/Door{i}/unlock")
     def door_unlock(i: int):
         door = doors.get(i)
