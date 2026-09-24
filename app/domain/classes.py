@@ -18,12 +18,13 @@ class Game:
         self.door.unlock()
 
 class Enigme:
-    def __init__(self, question, reponse, indice, lettre = None):
-        self.question = question
+    def __init__(self, question, reponse, indice, lettre=None, number=None):
+        self.question = question  
         self.reponse = reponse
         self.indice = indice
         self.lettre = lettre
         self.solved = False
+        self.number = number
 
     def poser_question(self):
         print(self.question)
@@ -58,3 +59,16 @@ class Door(Enigme):
             print("La porte est maintenant déverrouillée.")
         else:
             print("Vous devez résoudre l'énigme pour déverrouiller la porte 2.")
+
+class Room:
+    def __init__(self, enigmes, door):
+        self.enigmes = enigmes
+        self.door = door
+
+    def choisir_enigme(self, number):
+        for enigme in self.enigmes:
+            if enigme.number == number:
+                return enigme
+        raise ValueError(f"Aucune énigme avec le numéro {number} dans cette room")
+
+    

@@ -2,7 +2,10 @@ from webbrowser import get
 
 from app.domain.enigme import Enigme1, Enigme2, Enigme3, Enigme4, Enigme5, Enigme6, Enigme7, Enigme8, Enigme11, Enigme12, Enigme13, Enigme14, Enigme15, Enigme16, Enigme21, Enigme22, Enigme23, Enigme24, Enigme25, Enigme26
 from app.domain.enigme import Door1, Door2, Door3
-from fastapi import FastAPI
+from app.domain.rooms import Room1, Room2, Room3
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
 
 import hashlib
 
@@ -37,6 +40,18 @@ doors = {
     2: Door2,
     3: Door3,
 }
+
+rooms = {
+    1: Room1,
+    2: Room2,
+    3: Room3,
+}
+
+def get_room_by_id(room_id: int):
+    return rooms.get(room_id)
+
+class ChoixEnigme(BaseModel):
+    enigme_number: int
 
 app = FastAPI()
 i = 1
@@ -127,6 +142,35 @@ while y <= 3:
             return {"message": "La porte est maintenant déverrouillée."}
         return {"message": "Vous devez résoudre l'énigme pour déverrouiller la porte."}
     y = y + 1
+
+@app.get("/Room{room_id}")
+def get_room(room_id: int):
+    room = get_room_by_id(room_id)
+    if room is None:
+        raise HTTPException(status_code=404, detail="Room introuvable")
+
+    return {
+        "room_id": room_id,
+        "message": "Choisissez une énigme",
+        "enigmes_disponibles": [enigme.number for enigme in room.enigmes],
+    }
+
+
+@app.post("/Room{room_id}/choix")
+def choisir_enigme(room_id: int, choix: ChoixEnigme):
+    room = get_room_by_id(room_id)
+    if room is None:
+        raise HTTPException(status_code=404, detail="Room introuvable")
+
+    try:
+        enigme = room.choisir_enigme(choix.enigme_number)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Aucune énigme à ce numéro")
+
+    return {
+        "question": enigme.question,
+    }    
+        
 
 @app.get("/health")
 def health():
