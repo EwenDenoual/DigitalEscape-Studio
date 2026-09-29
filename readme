@@ -1,0 +1,99 @@
+# DigitalEscape-Studio
+
+Backend d'une application d'escape game (projet Fil Rouge), développé avec **FastAPI**. L'application expose une API REST permettant de récupérer des énigmes et des portes, de vérifier les réponses, et de gérer la progression du joueur.
+
+## Stack technique
+
+- **Python 3.14**
+- **FastAPI** — framework web pour l'API REST
+- **Miniconda** — gestion de l'environnement Python
+- **hashlib (SHA-256)** — hachage des réponses pour ne pas les exposer en clair via l'API
+
+## Structure du projet
+
+```
+DigitalEscape-Studio/
+├── app/
+│   ├── main.py              # Point d'entrée FastAPI, déclaration des routes
+│   └── domain/
+│       ├── __init__.py
+│       ├── classes.py       # Classes Enigme et Door
+│       ├── enigme.py        # Instances des énigmes et portes (Enigme1...Enigme26, Door1...)
+|       └── rooms.py         # Instances des rooms (Room1 ...)
+└── README.md
+```
+
+## Modèle de données
+
+### `Enigme`
+Représente une énigme avec :
+- `question` — l'énoncé
+- `reponse` — hash SHA-256 de la réponse attendue
+- `indice` — indice donné au joueur
+- `lettre` — lettre à récupérer en cas de bonne réponse
+- `solved` — statut de résolution
+
+### `Door` (hérite de `Enigme`)
+Représente une porte verrouillée par une énigme, avec en plus :
+- `indice2` — second indice
+- `locked` — statut de verrouillage (déverrouillée uniquement si l'énigme est résolue)
+
+### `Room`
+Représente une salle avec :
+- `enigmes` — liste des enigmes lier
+- `door` — porte lier
+
+## Installation
+
+```bash
+# Activer l'environnement conda
+conda activate <nom_de_l_env>
+
+# Lancer le serveur en mode développement
+fastapi dev app/main.py
+```
+
+## Documentation de l'API
+
+Une fois le serveur lancé, la documentation interactive est disponible sur :
+- **Swagger UI** : http://127.0.0.1:8000/docs
+- **ReDoc** : http://127.0.0.1:8000/redoc
+
+## Routes principales
+
+### Énigmes
+
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/Enigme{i}/question` | Récupère la question de l'énigme `i` |
+| GET | `/Enigme{i}/reponse?tentative=...` | Vérifie une tentative de réponse |
+| GET | `/Enigme{i}/indice` | Récupère l'indice de l'énigme `i` |
+| GET | `/Enigme{i}/lettre` | Récupère la lettre associée à l'énigme `i` |
+
+Numéros d'énigmes disponibles : 1 à 26, à l'exception de 9, 10, 17, 18, 19 et 20.
+
+### Portes
+
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/Door{i}/question` | Récupère la question de la porte `i` |
+| GET | `/Door{i}/reponse?tentative=...` | Vérifie une tentative de réponse |
+| GET | `/Door{i}/indice` | Récupère le premier indice de la porte `i` |
+| GET | `/Door{i}/indice2` | Récupère le second indice de la porte `i` |
+| GET | `/Door{i}/unlock` | Déverrouille la porte si l'énigme associée est résolue |
+
+### Room
+
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/Room{room_id}` | Affiche la liste des enigme lier a la room
+| GET | `/Room{room_id}/choix` | Récupère le choix d'enigme |
+
+
+## Sécurité
+
+Les réponses ne sont jamais stockées ni renvoyées en clair : elles sont hachées en SHA-256 à la création de chaque instance, et la vérification compare le hash de la tentative du joueur au hash stocké.
+
+## Auteur
+
+Kilian Boudeaud et Ewen Denoual — Projet Fil Rouge
